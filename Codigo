@@ -1,0 +1,114 @@
+import ast  # Importa el modulo ast, que es utilizado para analizar expresiones de Python y construir arboles de sintaxis abstracta.
+
+class Nodo:  
+    def __init__(self, valor):  
+        self.valor = valor  # Valor del nodo
+        self.izquierda = None  # Referencia al hijo izquierdo del nodo
+        self.derecha = None  # Referencia al hijo derecho del nodo
+
+def construir_arbol_expresion(expresion):  
+    arbol = ast.parse(expresion, mode='eval')  # Analiza la expresion para obtener un arbol de sintaxis abstracta.
+    return construir_arbol_desde_ast(arbol.body)  # Llama a la función para construir el arbol a partir del AST obtenido.
+
+def construir_arbol_desde_ast(nodo):  
+    if isinstance(nodo, ast.BinOp):  # Verifica si el nodo es una operacion binaria.
+        operador = ''  # Inicializa el operador
+        if isinstance(nodo.op, ast.Add):  
+            operador = '+'  
+        elif isinstance(nodo.op, ast.Sub):  
+            operador = '-'  
+        elif isinstance(nodo.op, ast.Mult):  
+            operador = '*'  
+        elif isinstance(nodo.op, ast.Div):  
+            operador = '/'  
+        raiz = Nodo(operador)  # Crea un nodo en el arbol con el operador de la operacion binaria.
+        raiz.izquierda = construir_arbol_desde_ast(nodo.left)  # Construye recursivamente el subárbol izquierdo.
+        raiz.derecha = construir_arbol_desde_ast(nodo.right)  # Construye recursivamente el subarbol derecho.
+        return raiz  
+    elif isinstance(nodo, ast.Num):  
+        return Nodo(nodo.n)  # Crea un nodo en el arbol con el valor numerico.
+    else:  
+        raise ValueError("Expresion invalida")  # Si el nodo no es binario ni numerico, lanza un error.
+
+def evaluar_arbol_expresion(raiz):  
+    if raiz.valor == '+':  
+        return evaluar_arbol_expresion(raiz.izquierda) + evaluar_arbol_expresion(raiz.derecha)  # Evalua recursivamente el subarbol izquierdo y derecho, y suma los resultados.  
+    elif raiz.valor == '-':  
+        return evaluar_arbol_expresion(raiz.izquierda) - evaluar_arbol_expresion(raiz.derecha)  # Evalua recursivamente el subarbol izquierdo y derecho, y resta los resultados.  
+    elif raiz.valor == '*':  
+        return evaluar_arbol_expresion(raiz.izquierda) * evaluar_arbol_expresion(raiz.derecha)  # Evalua recursivamente el subarbol izquierdo y derecho, y multiplica los resultados.  
+    elif raiz.valor == '/':  
+        return evaluar_arbol_expresion(raiz.izquierda) / evaluar_arbol_expresion(raiz.derecha)  # Evalua recursivamente el subarbol izquierdo y derecho, y divide los resultados.  
+    else:  
+        return raiz.valor  # Si el nodo raiz es un numero, devuelve su valor.
+
+def main():  
+    expresion = "((3+4)*5)+((2-5)+(8*2))"  
+    arbol = construir_arbol_expresion(expresion)  # Construye el arbol de expresion a partir de la expresion algebraica.
+    resultado = evaluar_arbol_expresion(arbol)  # Evalúa el árbol de expresión para obtener el resultado.
+    print("Resultado de la expresion {}: {}".format(expresion, resultado))  # Imprime el resultado de la expresion.
+
+if __name__ == "__main__":  
+    main()  # Si es asi, llama a la funcion main().
+
+
+
+
+
+
+                                                                            #Arbol Binario
+
+
+class Nodo:
+    def __init__(self, valor):
+        self.valor = valor  # Valor del nodo
+        self.izquierda = None  # Referencia al hijo izquierdo del nodo
+        self.derecha = None  # Referencia al hijo derecho del nodo
+
+class Arbol:
+    def __init__(self, n):
+        self.raiz = self._crear_arbol_fibonacci(n)  # Inicializacion del arbol con la raiz generada por Fibonacci
+
+    def _crear_arbol_fibonacci(self, n):
+        if n <= 0:  # Si n es menor o igual a 0, se devuelve None
+            return None
+        a, b = 0, 1  # Inicializacion de los primeros terminos de Fibonacci
+        raiz = Nodo(a)  # Creacion del nodo raiz con el primer termino de Fibonacci
+        for _ in range(1, n):  # Generacion de los siguientes terminos de Fibonacci
+            raiz = self._insertar_recursivo(raiz, b)  # Insertar el nuevo termino en el arbol
+            a, b = b, a + b  # Actualizar los terminos de Fibonacci
+        return raiz  # Devolver la raiz del arbol
+
+    def _insertar_recursivo(self, nodo_actual, valor):
+        if nodo_actual is None:  # Si el nodo actual es None, se crea un nuevo nodo con el valor dado
+            return Nodo(valor)
+        if valor < nodo_actual.valor:  # Si el valor es menor que el valor del nodo actual, se inserta en el subarbol izquierdo
+            nodo_actual.izquierda = self._insertar_recursivo(nodo_actual.izquierda, valor)
+        elif valor > nodo_actual.valor:  # Si el valor es mayor que el valor del nodo actual, se inserta en el subarbol derecho
+            nodo_actual.derecha = self._insertar_recursivo(nodo_actual.derecha, valor)
+        return nodo_actual  # Se devuelve el nodo actual
+
+    def buscar_max(self):
+        return self._buscar_max_recursivo(self.raiz)  # Llama a la funcion recursiva para encontrar el valor maximo
+
+    def _buscar_max_recursivo(self, nodo_actual):
+        if nodo_actual.derecha is None:  # Si no hay hijo derecho, el nodo actual es el maximo
+            return nodo_actual
+        return self._buscar_max_recursivo(nodo_actual.derecha)  # Llama recursivamente al hijo derecho
+
+# Crear el arbol con los primeros 10 terminos de la secuencia de Fibonacci
+arbol = Arbol(10)
+
+# Encontrar el nodo con el valor maximo en el arbol
+nodo_maximo = arbol.buscar_max()
+
+# Imprimir el contenido del nodo maximo
+print("Nodo con el valor maximo en la secuencia de Fibonacci:")
+print(nodo_maximo.valor)
+
+
+
+
+
+
+
